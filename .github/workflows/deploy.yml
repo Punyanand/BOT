@@ -36,4 +36,4 @@ jobs:
         aws configure set default.region us-east-1
 
         # Update the Lambda function code
-        aws lambda update-function-code --function-name YOUR_LAMBDA_FUNCTION_NAME --zip-file fileb://function.zip
+        aws lambda update-function-code --function-name PagerDutySlackIntegratio --zip-file fileb://BOT.zip
