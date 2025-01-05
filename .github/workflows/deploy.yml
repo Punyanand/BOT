@@ -31,8 +31,8 @@ jobs:
     - name: Deploy to AWS Lambda
       run: |
         # Configure AWS CLI with secrets stored in GitHub
-        aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws configure set aws_access_key_id ${{ secrets.AKIAYKGIRZ3TRWR2GU43 }}
+        aws configure set aws_secret_access_key ${{ secrets.aWRKYjGN0wqAL2gUVZxfgc+6y0BU36AwIDsN/Zi4}}
         aws configure set default.region us-east-1
 
         # Update the Lambda function code
