@@ -21,12 +21,6 @@ jobs:
       with:
         python-version: '3.8'
 
-    # Step 3: Install the required dependencies for your project
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-
     # Step 4: Deploy to AWS Lambda
     - name: Deploy to AWS Lambda
       run: |
