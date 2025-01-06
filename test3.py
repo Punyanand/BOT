@@ -4,22 +4,7 @@ import requests
 PAGERDUTY_API_KEY = "u+ijzSKE6mAqvt8_DG4A"
 
 # Replace with the URL of your Slack webhook endpoint
-SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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"
-
-def send_slack_message(message):
-    """
-    Sends a message to the specified Slack webhook URL.
-
-    Args:
-        message (str): The message to be sent.
-    """
-    payload = {"text": message}
-    try:
-        response = requests.post(SLACK_WEBHOOK_URL, json=payload)
-        response.raise_for_status()
-        print("Message sent to Slack.")
-    except requests.exceptions.RequestException as e:
-        print(f"Error sending Slack message: {e}")
+SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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"
 
 def get_all_users():
     """
@@ -97,9 +82,6 @@ def list_users_without_phone_number():
         user_name = user.get("name", "Unknown")
         contact_methods = get_user_contact_methods(user_id)
 
-        # Debugging: Print the contact methods to see the structure
-        print(f"Contact methods for {user_name} ({user_id}): {contact_methods}")
-
         # Check if there is a contact method with type 'phone_contact_method'
         has_phone = False
         for contact in contact_methods:
@@ -116,39 +98,23 @@ def list_users_without_phone_number():
             })
         else:
             print(f"User {user_name} ({user_id}) has a phone number.")
-
+    
     return users_without_phone
 
-def get_latest_incident():
+def send_slack_message(message):
     """
-    Fetch the latest triggered incident from PagerDuty.
+    Sends a message to the specified Slack webhook URL.
 
-    Returns:
-        dict: A dictionary containing the incident details, or None if no incident is found.
+    Args:
+        message (str): The message to be sent.
     """
-    url = "https://api.pagerduty.com/incidents"
-    headers = {
-        "Authorization": f"Token token={PAGERDUTY_API_KEY}",
-        "Accept": "application/vnd.pagerduty+json;version=2"
-    }
-    params = {
-        "statuses[]": "triggered",  # Only triggered incidents
-        "sort_by": "created_at:desc",  # Sort by most recent
-        "limit": 1  # Fetch only the most recent incident
-    }
-
+    payload = {"text": message}
     try:
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.post(SLACK_WEBHOOK_URL, json=payload)
         response.raise_for_status()
-        data = response.json()
-
-        # Check for incidents in the response
-        if "incidents" in data and data["incidents"]:
-            return data["incidents"][0]  # Return the most recent incident
-        return None
+        print("Message sent to Slack.")
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching incidents: {e}")
-        return None
+        print(f"Error sending Slack message: {e}")
 
 def lambda_handler(event, context):
     """
@@ -157,38 +123,29 @@ def lambda_handler(event, context):
     """
     print("Lambda function started.")
 
-    # Step 1: Get the latest triggered incident and send to Slack
-    latest_incident = get_latest_incident()
-
-    if not latest_incident:
-        print("No triggered incidents found.")
-        send_slack_message("No triggered incidents found.")
-    else:
-        # Extract details from the incident
-        incident_title = latest_incident.get("title", "No title provided")
-        incident_description = latest_incident.get("description", "No description provided")
-        incident_url = latest_incident.get("html_url", "No URL available")
-
-        # Format the Slack message for the incident
-        incident_message = (
-            f"*Incident Triggered*\n"
-            f"Title: {incident_title}\n"
-            f"Description: {incident_description}\n"
-            f"More Details: {incident_url}"
-        )
-
-        # Send the incident message to Slack
-        print(incident_message)
-        send_slack_message(incident_message)
-
-    # Step 2: Get users without a phone number
+    # Step 1: Get users without a phone number
     users_without_phone_number = list_users_without_phone_number()
     print("\nSummary: Users without a phone number")
     for user in users_without_phone_number:
         print(f"- {user['name']} (ID: {user['id']})")
+
+    # Step 2: Send a summary message to Slack
+    if users_without_phone_number:
+        slack_message = "The following users do not have a phone number:\n"
+        for user in users_without_phone_number:
+            slack_message += f"- {user['name']} (ID: {user['id']})\n"
+        send_slack_message(slack_message)
+    else:
+        send_slack_message("All users have a phone number.")
 
     return {
         "statusCode": 200,
         "body": "Execution completed successfully"
     }
 
+if __name__ == "__main__":
+    # This part will not be executed in AWS Lambda
+    users_without_phone_number = list_users_without_phone_number()
+    print("\nSummary: Users without a phone number")
+    for user in users_without_phone_number:
+        print(f"- {user['name']} (ID: {user['id']})")
