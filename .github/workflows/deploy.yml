@@ -8,26 +8,45 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest   # You can choose the OS for your runner (e.g., Ubuntu)
+    runs-on: ubuntu-latest  # You can choose the OS for your runner (e.g., Ubuntu)
 
     steps:
     # Step 1: Checkout the repository code
     - name: Checkout code
       uses: actions/checkout@v2
 
-    # Step 2: Set up Python environment (you can choose your Python version)
+    # Step 2: Set up Python environment (use Python 3.8)
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: '3.8'
 
-    # Step 4: Deploy to AWS Lambda
+    # Step 3: Install dependencies and prepare the deployment zip
+    - name: Create deployment zip
+      run: |
+        # Ensure 'zip' is installed
+        if ! command -v zip &> /dev/null
+        then
+          sudo apt-get install -y zip
+        fi
+        # Create a folder for deployment and install dependencies
+        mkdir -p ./deployment_zip
+        pip install snowflake-connector-python --platform manylinux2010_x86_64 --only-binary=:all: -t ./deployment_zip
+        cp ./lambda_function.py ./deployment_zip
+        # Create the zip file for Lambda deployment
+        cd deployment_zip
+        zip -r lambda_zip.zip *
+
+    # Step 4: Configure AWS credentials
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    # Step 5: Deploy to AWS Lambda
     - name: Deploy to AWS Lambda
       run: |
-        # Configure AWS CLI with secrets stored in GitHub
-        aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws configure set default.region us-east-1
-
         # Update the Lambda function code
-        aws lambda update-function-code --function-name PagerDutySlackIntegratio --zip-file fileb://BOT.zip
+        aws lambda update-function-code --function-name PagerDutySlackIntegration --zip-file fileb://./deployment_zip/lambda_zip.zip
