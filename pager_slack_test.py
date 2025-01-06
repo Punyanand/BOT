@@ -3,7 +3,7 @@ import requests
 PAGERDUTY_API_KEY = "u+ijzSKE6mAqvt8_DG4A"
 
 # Replace with the URL of your Slack webhook endpoint
-SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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"
+SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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"
 
 # def get_latest_incident():
 #     """

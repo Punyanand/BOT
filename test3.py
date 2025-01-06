@@ -4,7 +4,7 @@ import requests
 PAGERDUTY_API_KEY = "u+ijzSKE6mAqvt8_DG4A"
 
 # Replace with the URL of your Slack webhook endpoint
-SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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"
+SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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"
 
 def get_all_users():
     """
