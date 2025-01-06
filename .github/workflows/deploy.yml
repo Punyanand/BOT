@@ -49,4 +49,4 @@ jobs:
     - name: Deploy to AWS Lambda
       run: |
         # Update the Lambda function code
-        aws lambda update-function-code --function-name PagerDutySlackIntegration --zip-file fileb://./deployment_zip/lambda_zip.zip
+        aws lambda update-function-code --function-name PagerDutySlackIntegratio --zip-file fileb://./deployment_zip/lambda_zip.zip
