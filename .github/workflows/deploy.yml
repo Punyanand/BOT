@@ -35,6 +35,7 @@ jobs:
         # Correct the file path for testnocontact.py
         cp ./test_nocontact.py ./deployment_zip  # Update file name here
         cp ./pager_slack_test.py ./deployment_zip
+        cp ./test.py ./deployment_zip
         cd deployment_zip
         # Create the zip file for Lambda deployment
         zip -r lambda_zip.zip *
