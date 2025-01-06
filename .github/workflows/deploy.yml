@@ -34,6 +34,7 @@ jobs:
         pip install snowflake-connector-python --platform manylinux2010_x86_64 --only-binary=:all: -t ./deployment_zip
         # Correct the file path for testnocontact.py
         cp ./test_nocontact.py ./deployment_zip  # Update file name here
+        cp ./pager_slack_test.py ./deployment_zip
         cd deployment_zip
         # Create the zip file for Lambda deployment
         zip -r lambda_zip.zip *
