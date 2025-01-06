@@ -32,9 +32,10 @@ jobs:
         # Create a folder for deployment and install dependencies
         mkdir -p ./deployment_zip
         pip install snowflake-connector-python --platform manylinux2010_x86_64 --only-binary=:all: -t ./deployment_zip
-        cp ./lambda_function.py ./deployment_zip
-        # Create the zip file for Lambda deployment
+        # Correct the file path for testnocontact.py
+        cp ./testnocontact.py ./deployment_zip  # Update file name here
         cd deployment_zip
+        # Create the zip file for Lambda deployment
         zip -r lambda_zip.zip *
 
     # Step 4: Configure AWS credentials
@@ -49,4 +50,4 @@ jobs:
     - name: Deploy to AWS Lambda
       run: |
         # Update the Lambda function code
-        aws lambda update-function-code --function-name PagerDutySlackIntegratio --zip-file fileb://./deployment_zip/lambda_zip.zip
+        aws lambda update-function-code --function-name PagerDutySlackIntegration --zip-file fileb://./deployment_zip/lambda_zip.zip
